@@ -1,0 +1,6 @@
+{
+  "default_user": "admin",
+  "default_password": "admin",
+  "host": "127.0.0.1",
+  "port": "9090"
+}
