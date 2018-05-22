@@ -1,5 +1,6 @@
 {
   "container_name": "grafana-1",
   "monit_timeout": 75,
-  "systemd_timeout": 10
+  "systemd_timeout": 10,
+  "docker_timeout": 10
 }

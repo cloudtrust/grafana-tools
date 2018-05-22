@@ -11,7 +11,6 @@ __copyright__ = 'Copyright 2018, ELCA'
 
 import json
 import pytest
-import sh
 
 from typing import Tuple
 
@@ -56,11 +55,6 @@ def container_name(settings: dict) -> str:
 
 
 @pytest.fixture(scope='class')
-def container(container_name: str) -> sh.Command:
-    return sh.docker.bake('exec', container_name)
-
-
-@pytest.fixture(scope='class')
 def systemd_timeout(settings: dict) -> int:
     return get_property(settings, 'systemd_timeout')
 
@@ -68,6 +62,11 @@ def systemd_timeout(settings: dict) -> int:
 @pytest.fixture(scope='class')
 def monit_timeout(settings: dict) -> int:
     return get_property(settings, 'monit_timeout')
+
+
+@pytest.fixture(scope='class')
+def docker_timeout(settings: dict) -> int:
+    return get_property(settings, 'docker_timeout')
 
 
 @pytest.fixture(scope='class')

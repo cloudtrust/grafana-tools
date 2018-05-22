@@ -31,7 +31,7 @@ class TestServiceGrafana:
 
     @pytest.mark.parametrize('get_method', ['/api/admin/settings', '/api/admin/stats'])
     def test_admin_api_wo_credentials(self, get_method, host: str, port: str) -> None:
-        base = 'http://{}:{}'.format(host, port)
+        base = 'http://{host}:{port}'.format(host=host, port=port)
         url = urllib.parse.urljoin(base, get_method)
         response = requests.get(url)
         assert response.status_code == HTTPStatus.UNAUTHORIZED
@@ -39,7 +39,7 @@ class TestServiceGrafana:
     @pytest.mark.parametrize('get_method', ['/api/admin/settings', '/api/admin/stats'])
     def test_admin_api(self, get_method, default_credentials: Tuple[str, str], host: str, port: str) -> None:
         username, password = default_credentials
-        base = 'http://{}:{}@{}:{}'.format(username, password, host, port)
+        base = 'http://{user}:{password}@{host}:{port}'.format(user=username, password=password, host=host, port=port)
         url = urllib.parse.urljoin(base, get_method)
         response = requests.get(url)
         assert response.status_code == HTTPStatus.OK
@@ -54,7 +54,7 @@ class TestServiceGrafana:
         :return:
         """
         username, password = default_credentials
-        base = 'http://{}:{}@{}:{}'.format(username, password, host, port)
+        base = 'http://{user}:{password}@{host}:{port}'.format(user=username, password=password, host=host, port=port)
         url = urllib.parse.urljoin(base, '/api/datasources')
         name = str(uuid.uuid4())
         data = {'name': name,
@@ -62,11 +62,13 @@ class TestServiceGrafana:
                 'url': 'http://mydatasource.com',
                 'access': 'proxy',
                 'basicAuth': False}
-        response = requests.post(url, data)
+        response = requests.post(url, json=data)
         assert response.status_code == HTTPStatus.OK
         datasource_id = response.json().get('id')
         assert id, 'undefined id'
-        logger.info('Data source created with id {}'.format(datasource_id))
+        logger.info('Data source created with id {id}'.format(id=datasource_id))
+        logger.debug(response.text)
+
         data = {'id': datasource_id,
                 'orgId': datasource_id,
                 'name': name,
@@ -82,9 +84,13 @@ class TestServiceGrafana:
                 'isDefault': False,
                 'jsonData': None}
         url = urllib.parse.urljoin(base, '/api/datasources/{}'.format(datasource_id))
-        response = requests.put(url, data)
+        response = requests.put(url, json=data)
         assert response.status_code == HTTPStatus.OK
-        logger.info('Data source {} updated'.format(datasource_id))
+        logger.info('Data source {id} updated'.format(id=datasource_id))
+        logger.debug(response.text)
+
         response = requests.delete(url)
         assert response.status_code == HTTPStatus.OK
-        logger.info('Data source {} deleted'.format(datasource_id))
+        logger.info('Data source {id} deleted'.format(id=datasource_id))
+        logger.debug(response.text)
+
